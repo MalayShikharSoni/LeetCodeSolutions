@@ -10,20 +10,16 @@ public:
                 if (isWater[i][j] == 1) {
                     height[i][j] = 0;
                 } else {
-                    if (i > 0) 
-                        height[i][j] = min(height[i][j], height[i - 1][j] + 1);
-                    if (j > 0) 
-                        height[i][j] = min(height[i][j], height[i][j - 1] + 1); 
+                    if (i > 0) height[i][j] = min(height[i][j], height[i - 1][j] + 1);
+                    if (j > 0) height[i][j] = min(height[i][j], height[i][j - 1] + 1); 
                 }
             }
         }
 
         for (int i = R - 1; i >= 0; i--) {
             for (int j = C - 1; j >= 0; j--) {
-                if (i < R - 1) 
-                    height[i][j] = min(height[i][j], height[i + 1][j] + 1); 
-                if (j < C - 1) 
-                    height[i][j] = min(height[i][j], height[i][j + 1] + 1); 
+                if (i < R - 1) height[i][j] = min(height[i][j], height[i + 1][j] + 1); 
+                if (j < C - 1) height[i][j] = min(height[i][j], height[i][j + 1] + 1); 
             }
         }
 
