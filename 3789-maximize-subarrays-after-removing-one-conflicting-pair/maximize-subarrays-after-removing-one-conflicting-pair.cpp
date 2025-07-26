@@ -16,29 +16,26 @@ public:
         for (int r = 1; r <= n; r++) {
             for (int left : right[r]) {
 
-                if(left > firstMax) {
+                if (left > firstMax) {
                     secondMax = firstMax;
                     firstMax = left;
-                } else if(left > secondMax) {
+                } else if (left > secondMax) {
                     secondMax = left;
                 }
-
             }
 
-            ans += r - firstMax;  
+            ans += r - firstMax;
 
             if (firstMax > 0) {
                 bonus[firstMax] += firstMax - secondMax;
-            }      
-
+            }
         }
 
         long long max_bonus = 0;
         for (long long b : bonus) {
-            max_bonus = std::max(max_bonus, b);
+            max_bonus = max(max_bonus, b);
         }
 
         return ans + max_bonus;
-
     }
 };
