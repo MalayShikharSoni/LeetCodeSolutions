@@ -1,43 +1,39 @@
 class Solution {
 public:
-    int maxKDivisibleComponents(int n, vector<vector<int>>& edges, vector<int>& values, int k) {
-        vector<int> adjlist[n];
-
-        for(auto edge : edges){
-            int u=edge[0];
-            int v=edge[1];
-
-            adjlist[u].push_back(v);
-            adjlist[v].push_back(u);
+    int maxKDivisibleComponents(int n, vector<vector<int>>& edges,
+                                vector<int>& values, int k) {
+        vector<vector<int>> G(n);
+        for (auto edge : edges) {
+            G[edge[0]].push_back(edge[1]);
+            G[edge[1]].push_back(edge[0]);
         }
+        stack<int> S;
+        vector<int> parent(n);
 
-        int ans=0;
-
-        dfs(0, -1, adjlist, values, k, ans);
-        
-        return ans;
-
-        
-        
-    }
-
-    int dfs(int current, int parent, vector<int>adjlist[], vector<int> &values, int k, int &ans){
-        int sum=0;
-
-        for(auto neighbor: adjlist[current]){
-            if(neighbor != parent){
-                sum+=dfs(neighbor, current, adjlist, values, k, ans);
-                sum%=k;
+        auto DFS = [&](int u, int p, auto&& DFS) -> void {
+            parent[u] = p;
+            S.push(u);
+            for (auto v : G[u]) {
+                if (v == p)
+                    continue;
+                DFS(v, u, DFS);
             }
-
+        };
+        DFS(0, -1, DFS);
+        vector<long long> sum(n);
+        for (int i = 0; i < n; i++) {
+            sum[i] = values[i];
         }
-
-        sum+=values[current];
-
-        sum%=k;
-
-        if(sum==0) ans++;
-
-        return sum;
+        int ans = 0;
+        while (!S.empty()) {
+            int u = S.top();
+            S.pop();
+            if (sum[u] % k == 0) {
+                ans += 1;
+            } else {
+                sum[parent[u]] += sum[u];
+            }
+        }
+        return ans;
     }
 };
