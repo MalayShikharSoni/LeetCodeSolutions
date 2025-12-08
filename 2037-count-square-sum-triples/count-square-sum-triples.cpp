@@ -1,6 +1,6 @@
 class Solution {
 public:
-    bool perfectSquare(int n) {
+    int perfectSquare(int n) {
 
         if (n == 1)
             return true;
@@ -14,7 +14,7 @@ public:
 
             int mid = left + (right - left) / 2;
             if (mid * mid == n)
-                return true;
+                return mid;
 
             else if (mid * mid >= n) {
                 right = mid;
@@ -25,7 +25,7 @@ public:
             }
         }
 
-        return false;
+        return 0;
     }
 
     int countTriples(int n) {
@@ -45,8 +45,9 @@ public:
                 //     count++;
                 // }
 
-                if(perfectSquare(cSquare) && (sqrt(cSquare)) <= n){
-                    cout << a << " " << b << " "  << cSquare <<  endl;
+
+                if(perfectSquare(cSquare) != 0 && perfectSquare(cSquare) <= n){
+                    cout << a << " " << b << " " << perfectSquare(cSquare) << " " << cSquare <<  endl;
                     count++;
                 }
 
