@@ -1,35 +1,50 @@
 class Solution {
 public:
     int swimInWater(vector<vector<int>>& grid) {
-        int m = grid.size(), n = grid[0].size();
-        vector<tuple<int,int,int>> edges;
-        
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i > 0)
-                    edges.push_back({max(grid[i][j], grid[i-1][j]), i*n+j, (i-1)*n+j});
-                if (j > 0)
-                    edges.push_back({max(grid[i][j], grid[i][j-1]), i*n+j, i*n+j-1});
+
+        int n = grid.size();
+        int left = grid[0][0];
+        int right = n * n - 1;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (canSwim(grid, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
             }
         }
+
+        return left;
+    }
+
+    bool canSwim(vector<vector<int>>& grid, int t) {
+
+        int n = grid.size();
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        return dfs(grid, visited, 0, 0, t);
         
-        sort(edges.begin(), edges.end());
-        vector<int> parent(m * n);
-        iota(parent.begin(), parent.end(), 0);
-        
-        function<int(int)> find = [&](int x) {
-            return parent[x] == x ? x : parent[x] = find(parent[x]);
-        };
-        
-        auto unite = [&](int x, int y) {
-            parent[find(x)] = find(y);
-        };
-        
-        for (auto [cost, u, v] : edges) {
-            unite(u, v);
-            if (find(0) == find(m*n-1))
-                return cost;
+    }
+
+    bool dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int i,
+             int j, int t) {
+
+        int n = grid.size();
+
+        if (i < 0 || i >= n || j < 0 || j >= n || visited[i][j] ||
+            grid[i][j] > t) {
+            return false;
         }
-        return grid[0][0];
+
+        if (i == n - 1 && j == n - 1) {
+            return true;
+        }
+
+        visited[i][j] = true;
+
+        return (dfs(grid, visited, i - 1, j, t) ||
+                dfs(grid, visited, i + 1, j, t) ||
+                dfs(grid, visited, i, j - 1, t) ||
+                dfs(grid, visited, i, j + 1, t));
     }
 };
