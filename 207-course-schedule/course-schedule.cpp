@@ -2,50 +2,43 @@ class Solution {
 public:
     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
         
-        unordered_map<int, vector<int>> courseGraph;
-
-        for(auto& pre : prerequisites) {
-            courseGraph[pre[1]].push_back(pre[0]);
+        unordered_map<int, vector<int>> adjList;
+        vector<int> indegree(numCourses, 0);
+        
+        for(int i = 0; i < prerequisites.size(); i++) {
+            
+            int u = prerequisites[i][0];
+            int v = prerequisites[i][1];
+            adjList[u].push_back(v);
+            indegree[v]++;
+            
         }
-
-        unordered_set<int> visited;
-
-        for(int course = 0; course < numCourses; course++) {
-
-            if(!courseSchedule(course, courseGraph, visited)) {
-                return false;
+        
+        vector<int> ans;
+        queue<int> q;
+        
+        for(int i = 0; i < indegree.size(); i++) {
+            if(indegree[i] == 0) {
+                q.push(i);
             }
-
         }
-
-        return true;
+        
+        while(!q.empty()) {
+            
+            int temp = q.front();
+            q.pop();
+            ans.push_back(temp);
+            
+            for(auto it : adjList[temp]) {
+                indegree[it]--;
+                if(indegree[it] == 0) {
+                    q.push(it);
+                }
+            }
+            
+        }
+        
+        return ans.size() == adjList.size();
 
     }
-
-    bool courseSchedule(int course, unordered_map<int, vector<int>>& courseGraph, unordered_set<int>& visited) {
-
-        if(visited.count(course)) {
-            return false;
-        }
-
-        if(courseGraph.find(course) == courseGraph.end() || courseGraph[course].empty()) {
-            return true;
-        }
-
-        visited.insert(course);
-
-        for(int nextCourse : courseGraph[course]) {
-
-            if(!courseSchedule(nextCourse, courseGraph, visited)) {
-                return false;
-            }
-
-        }
-
-        visited.erase(course);
-        courseGraph[course] = {};
-
-        return true;
-
-    } 
 };
