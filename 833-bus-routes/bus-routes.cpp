@@ -1,50 +1,50 @@
 class Solution {
 public:
     int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {
-
-        if (source == target) return 0;
+        
+        if(source == target) {
+            return 0;
+        }
 
         unordered_map<int, vector<int>> busAtStop;
-        for (int i = 0; i < routes.size(); i++) {
-            for (int stop : routes[i]) {
+        for(int i = 0; i < routes.size(); i++) {
+            for(int stop : routes[i]) {
                 busAtStop[stop].push_back(i);
             }
         }
 
+        unordered_set<int> visitedBus;
+        int count = 1;
         queue<int> q;
-        unordered_set<int> visitedStops;
-        unordered_set<int> usedBuses;
 
-        q.push(source);
-        visitedStops.insert(source);
+        for(int root : busAtStop[source]) {
+            q.push(root);
+            visitedBus.insert(root);
+        }
 
-        int count = 0;
-
-        while (!q.empty()) {
+        while(!q.empty()) {
             int size = q.size();
-            count++;
 
-            while (size--) {
-                int currStop = q.front();
+            while(size--) {
+                int route = q.front();
                 q.pop();
 
-                for (int bus : busAtStop[currStop]) {
-                    if (usedBuses.count(bus)) continue;
-
-                    usedBuses.insert(bus);
-
-                    for (int stop : routes[bus]) {
-                        if (stop == target) return count;
-
-                        if (!visitedStops.count(stop)) {
-                            visitedStops.insert(stop);
-                            q.push(stop);
+                for(int stop : routes[route]) {
+                    if(stop == target) {
+                        return count;
+                    }
+                    for(auto nextBus : busAtStop[stop]) {
+                        if(!visitedBus.count(nextBus)) {
+                            visitedBus.insert(nextBus);
+                            q.push(nextBus);
                         }
                     }
                 }
             }
+            count++;
         }
 
         return -1;
+
     }
 };
