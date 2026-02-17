@@ -11,24 +11,24 @@
  */
 class Solution {
 public:
-
     int maxSum = INT_MIN;
 
-    int maxGain(TreeNode* node) {
+    int maxGain(TreeNode* root) {
 
-        if(node == nullptr) {
+        if(root == nullptr) {
             return 0;
         }
 
-        int leftGain = max(maxGain(node->left), 0);
-        int rightGain = max(maxGain(node->right), 0);
+        int leftGain = max(maxGain(root->left), 0);
+        int rightGain = max(maxGain(root->right), 0);
 
-        int priceNewPath = node->val + leftGain + rightGain;
-        maxSum = max(maxSum, priceNewPath);
+        int currSum = root->val + leftGain + rightGain;
 
-        return node->val + max(leftGain, rightGain);
+        maxSum = max(maxSum, currSum);
 
-    } 
+        return root->val + max(leftGain, rightGain);
+
+    }
 
     int maxPathSum(TreeNode* root) {
         
