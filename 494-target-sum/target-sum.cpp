@@ -1,24 +1,32 @@
 class Solution {
 public:
-    int n;
-    int range;
-    vector<vector<int>> dp;
-    int helper(int i, int sum, vector<int>& nums, int t) {
-        if (i >= n) {
-            return sum == t;
-        }
-        if (dp[i][sum + range] != -1) {
-            return dp[i][sum + range];
-        }
-        int takePositive = helper(i + 1, sum + nums[i], nums, t);
-        int takeNegative = helper(i + 1, sum - nums[i], nums, t);
-        return dp[i][sum + range] = takePositive + takeNegative;
-    }
     int findTargetSumWays(vector<int>& nums, int target) {
-        n = nums.size();
-        int totalSum = accumulate(nums.begin(), nums.end(), 0);
-        range = totalSum;
-        dp.resize(n , vector<int> (2*totalSum + 1 , -1));
-        return helper(0, 0, nums, target);
+        
+        int sum = 0;
+
+        for(int num : nums) {
+            sum += num;
+        }
+
+        if(abs(target) > sum) {
+            return 0;
+        }
+
+        if((target + sum) % 2 != 0) {
+            return 0;
+        }
+
+        int s1 = (sum + target) / 2;
+        vector<int> dp(s1 + 1, 0);
+        dp[0] = 1;
+
+        for(int num : nums) {
+            for(int i = s1; i >= num; i--) {
+                dp[i] += dp[i - num];
+            }
+        }
+
+        return dp[s1];
+
     }
 };
