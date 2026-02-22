@@ -11,12 +11,6 @@
 class Solution {
 public:
 
-    struct compare {
-        bool operator()(ListNode* a, ListNode* b) {
-            return a->val > b->val;
-        }
-    };
-
     ListNode* mergeKLists(vector<ListNode*>& lists) {
         
         priority_queue<int, vector<int>, greater<int>> pq;
