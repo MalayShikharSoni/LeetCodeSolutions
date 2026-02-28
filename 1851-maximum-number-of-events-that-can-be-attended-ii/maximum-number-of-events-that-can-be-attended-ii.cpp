@@ -1,45 +1,55 @@
 class Solution {
 public:
-    int maxValue(vector<vector<int>>& events, int k) {
-
-        sort(events.begin(), events.end(),
-             [](const vector<int>& x, const vector<int>& y) {
-                 return x[1] < y[1];
-             });
-
-        int n = events.size();
-
-        vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
-
-        for (int i = 1; i <= n; i++) {
-
-            int latest = binarySearch(events, events[i - 1][0]);
-
-            for (int j = 1; j <= k; j++) {
-                dp[i][j] =
-                    max(dp[i - 1][j], dp[latest + 1][j - 1] + events[i - 1][2]);
-            }
-        }
-
-        return dp[n][k];
-    }
-
-    int binarySearch(vector<vector<int>>& events, int start) {
-        int left = 0;
-        int right = events.size() - 1;
+    int findNextEvent(int low, int high, int currEnd, vector<vector<int>>& events) {
         int ans = -1;
 
-        while (left <= right) {
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
 
-            int mid = left + (right - left) / 2;
-
-            if (events[mid][1] < start) {
+            if (currEnd < events[mid][0]) {
                 ans = mid;
-                left = mid + 1;
+                high = mid - 1;
             } else {
-                right = mid - 1;
+                low = mid + 1;
             }
         }
         return ans;
+
+    }
+
+    int rec(int i, vector<vector<int>>& events, int k, vector<vector<int>>& dp) {
+
+        if (i == events.size() || k == 0) {
+            return 0;
+        }
+
+        if (dp[i][k] != -1) {
+            return dp[i][k];
+        }
+
+        int skip = rec(i + 1, events, k, dp);
+        int take = events[i][2];
+
+        int currEnd = events[i][1];
+
+        int j = findNextEvent(i + 1, events.size() - 1, currEnd, events);
+
+        if (j != -1) {
+            take += rec(j, events, k - 1, dp);
+        }
+
+        int ans = max(take, skip);
+
+        dp[i][k] = ans;
+        return ans;
+
+    }
+    
+    int maxValue(vector<vector<int>>& events, int k) {
+
+        sort(events.begin(), events.end());
+        vector<vector<int>> dp(events.size(), vector<int>(k + 1, -1));
+        return rec(0, events, k, dp);
+
     }
 };
