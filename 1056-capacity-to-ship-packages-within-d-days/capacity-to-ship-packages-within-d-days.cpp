@@ -2,55 +2,50 @@ class Solution {
 public:
     int shipWithinDays(vector<int>& weights, int days) {
         
-        int maxx = 0;
-        int sum = 0;
-        for(int i = 0; i < weights.size(); i++) {
-            maxx = max(maxx, weights[i]);
-            sum += weights[i];
+        int low = INT_MIN;
+        int high = 0;
+
+        for(int w : weights) {
+            low = max(low, w);
+            high += w;
         }
 
-        int low = maxx;
-        int high = sum;
-        int minn = sum;
+        int ans = high;
 
-        while(low <= high) {
+        while(low < high) {
 
             int mid = low + (high - low) / 2;
 
             if(check(mid, weights, days)) {
-                minn = mid;
-                high = mid - 1;
+                ans = mid;
+                high = mid;
             } else {
                 low = mid + 1;
             }
 
         }
 
-        return minn;
+        return ans;
 
     }
 
     bool check(int capacity, vector<int>& weights, int days) {
 
+        int daycount = 1;
         int c = capacity;
-        int dayCount = 1;
 
         for(int i = 0; i < weights.size(); i++) {
 
-            if(c >= weights[i]) {
+            if(weights[i] <= c) {
                 c -= weights[i];
             } else {
-                dayCount++;
                 c = capacity - weights[i];
+                daycount++;
             }
 
         }
 
-        if(dayCount <= days) {
-            return true;
-        }
-
-        return false;
+        return daycount <= days;
 
     }
 
