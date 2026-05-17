@@ -6,7 +6,7 @@ public:
         string last = strs[strs.size() - 1];
         string ans;
 
-        for (int i = 0; i < min(first.size(), last.size()); i++) {
+        for (int i = 0; i < first.size(); i++) {
             if (first[i] != last[i]) {
                 return ans;
             }
