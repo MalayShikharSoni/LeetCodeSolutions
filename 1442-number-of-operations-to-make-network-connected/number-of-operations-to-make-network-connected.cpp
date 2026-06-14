@@ -1,48 +1,47 @@
 class Solution {
 public:
     vector<int> parent;
-    vector<int> rank;
+    vector<int> size;
 
     int find(int x) {
 
         if(x == parent[x]) {
             return x;
-        }    
+        }
 
         return parent[x] = find(parent[x]);
 
     }
 
-    void unionset(int x, int y) {
+    bool unionSet(int x, int y) {
 
-        int parentX = find(x);
-        int parentY = find(y);
+        int rootX = find(x);
+        int rootY = find(y);
 
-        if(parentX == parentY) {
-            return;
+        if(rootX == rootY) {
+            return false;
         }
 
-        if(rank[parentX] > rank[parentY]) {
-           
-            parent[parentY] = parentX;
-        
-        } else if(rank[parentX] < rank[parentY]) {
-
-            parent[parentX] = parentY;
-
+        if(size[rootX] < size[rootY]) {
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX];
         } else {
-
-            parent[parentY] = parentX;
-            rank[parentX]++;
-
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
         }
+
+        return true;
 
     }
 
     int makeConnected(int n, vector<vector<int>>& connections) {
-        
+
+        if(connections.size() < n - 1) {
+            return -1;
+        }
+
         parent.resize(n);
-        rank.resize(n, 0);
+        size.resize(n, 1);
 
         for(int i = 0; i < n; i++) {
             parent[i] = i;
@@ -52,19 +51,18 @@ public:
 
         for(auto& conn : connections) {
 
-            int u = conn[0];
-            int v = conn[1];
+            int x = conn[0];
+            int y = conn[1];
 
-            if(find(u) == find(v)) {
+            if(find(x) == find(y)) {
                 extra++;
             } else {
-                unionset(u, v);
+                unionSet(x, y);
             }
 
         }
 
         int total = 0;
-
         for(int i = 0; i < n; i++) {
             if(parent[i] == i) {
                 total++;
