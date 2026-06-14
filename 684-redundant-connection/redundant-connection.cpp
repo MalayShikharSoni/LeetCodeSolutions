@@ -1,40 +1,68 @@
 class Solution {
 public:
-    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
-        unordered_map<int, vector<int>> graph;
+    vector<int> parent;
+    vector<int> size;
 
-        auto isConnected = [&](int u, int v) {
-            unordered_set<int> visited;
-            stack<int> stack;
-            stack.push(u);
+    int find(int x) {
 
-            while (!stack.empty()) {
-                int node = stack.top();
-                stack.pop();
+        if(parent[x] == x) {
+            return x;
+        }
 
-                if (visited.count(node)) continue;
-                visited.insert(node);
+        return parent[x] = find(parent[x]);
 
-                if (node == v) return true;
+    }
 
-                for (int neighbor : graph[node]) {
-                    stack.push(neighbor);
-                }
-            }
+    bool unionSet(int x, int y) {
+
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if(rootX == rootY) {
             return false;
-        };
+        }
 
-        for (const auto& edge : edges) {
-            int u = edge[0], v = edge[1];
+        if(size[rootX] < size[rootY]) {
 
-            if (graph.count(u) && graph.count(v) && isConnected(u, v)) {
-                return edge;
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX]; 
+
+        } else {
+
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+
+        }
+
+        return true;
+
+    }
+
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        
+        int n = edges.size();
+        parent.resize(n + 1);
+        size.resize(n + 1);
+
+        for(int i = 1; i <= n; i++) {
+
+            parent[i] = i;
+            size[i] = 1;
+
+        }
+
+        for(auto& edge: edges) {
+
+            int x = edge[0];
+            int y = edge[1];
+
+            if(!unionSet(x, y)) {
+                return {x, y};
             }
 
-            graph[u].push_back(v);
-            graph[v].push_back(u);
         }
 
         return {};
+
     }
 };
