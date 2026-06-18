@@ -1,73 +1,105 @@
 class Solution {
 public:
-    unordered_map<string, vector<string>> adj;
-    unordered_map<string, string> emailToName;
-    unordered_set<string> visited;
+    vector<int> parent;
+    vector<int> size;
 
-    void dfs(string email, vector<string>& emails) {
+    int find(int x) {
 
-        visited.insert(email);
-        emails.push_back(email);
-
-        for(string neighbor : adj[email]) {
-
-            if(!visited.count(neighbor)) {
-                dfs(neighbor, emails);
-            }
-
+        if (x == parent[x]) {
+            return x;
         }
 
+        return parent[x] = find(parent[x]);
+    }
+
+    bool unionSet(int x, int y) {
+
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if (rootX == rootY) {
+            return false;
+        }
+
+        if (size[rootX] < size[rootY]) {
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX];
+        } else {
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+        }
+
+        return true;
     }
 
     vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
-        
-        for(auto& account : accounts) {
 
-            string name = account[0];
+        int emailCount = 0;
 
-            for(int i = 1; i < account.size(); i++) {
-                
-                string currMail = account[i];
-                emailToName[currMail] = name;
+        unordered_map<string, int> emailToId;
+        unordered_map<string, string> emailToName;
 
-                if(i > 1) {
+        for (auto& acc : accounts) {
 
-                    string firstMail = account[1];
+            string name = acc[0];
 
-                    adj[firstMail].push_back(currMail);
-                    adj[currMail].push_back(firstMail);
+            for (int i = 1; i < acc.size(); i++) {
 
+                string email = acc[i];
+
+                if (emailToId.find(email) == emailToId.end()) {
+                    emailToId[email] = emailCount;
+                    emailCount++;
+                    emailToName[email] = name;
                 }
-
             }
-
         }
 
-        vector<vector<string>> ans;
+        parent.resize(emailCount);
+        size.resize(emailCount, 1);
 
-        for(auto& [email, name] : emailToName) {
-
-            if(!visited.count(email)) {
-
-                vector<string> emails;
-
-                dfs(email, emails);
-
-                sort(emails.begin(), emails.end());
-
-                vector<string> merged;
-                merged.push_back(name);
-
-                for(auto& e : emails) {
-                    merged.push_back(e);
-                }
-
-                ans.push_back(merged);                
-            }
-
+        for (int i = 0; i < emailCount; i++) {
+            parent[i] = i;
         }
 
-        return ans;
+        for (auto& acc : accounts) {
 
+            int firstEmailId = emailToId[acc[1]];
+
+            for (int i = 2; i < acc.size(); i++) {
+                int nextEmailId = emailToId[acc[i]];
+                unionSet(firstEmailId, nextEmailId);
+            }
+        }
+
+        unordered_map<int, vector<string>> rootToEmails;
+
+        for (auto& pair : emailToId) {
+
+            string email = pair.first;
+            int id = pair.second;
+
+            int root = find(id);
+
+            rootToEmails[root].push_back(email);
+        }
+
+        vector<vector<string>> merged;
+
+        for (auto& pair : rootToEmails) {
+
+            vector<string> emails = pair.second;
+            sort(emails.begin(), emails.end());
+
+            string name = emailToName[emails[0]];
+
+            vector<string> account;
+            account.push_back(name);
+            account.insert(account.end(), emails.begin(), emails.end());
+
+            merged.push_back(account);
+        }
+
+        return merged;
     }
 };
