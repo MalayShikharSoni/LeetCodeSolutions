@@ -1,43 +1,85 @@
 class Solution {
 public:
+    vector<int> parent;
+    vector<int> size;
+
+    int find(int x) {
+
+        if(x == parent[x]) {
+            return x;
+        }
+
+        return parent[x] = find(parent[x]);
+
+    }
+
+    bool unionSet(int x, int y) {
+
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if(rootX == rootY) {
+            return false;
+        }
+
+        if(size[rootX] < size[rootY]) {
+            parent[rootX] = rootY;
+            size[rootY] += size[rootX];
+        } else {
+            parent[rootY] = rootX;
+            size[rootX] += size[rootY];
+        }
+
+        return true;
+
+    }
+
     int minCostConnectPoints(vector<vector<int>>& points) {
 
         int n = points.size();
-        priority_queue<pair<int, int>, vector<pair<int, int>>,
-                       greater<pair<int, int>>>
-            pq;
 
-        vector<bool> inMST(n, false);
+        parent.resize(n);
+        size.resize(n, 1);
 
-        pq.push({0, 0});
+        for(int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
 
-        int minCost = 0;
-        int pointsConnected = 0;
+        vector<vector<int>> edges;
 
-        while (pointsConnected < n) {
+        for(int i = 0; i < n; i++) {
+            for(int j = i + 1; j < n; j++) {
 
-            auto [dist, u] = pq.top();
-            pq.pop();
+                int dist = abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1]);
+                edges.push_back({dist, i, j});
 
-            if (inMST[u])
-                continue;
-
-            inMST[u] = true;
-            minCost += dist;
-            pointsConnected++;
-
-            for (int v = 0; v < n; v++) {
-
-                if (!inMST[v]) {
-
-                    int cost = abs(points[u][0] - points[v][0]) +
-                               abs(points[u][1] - points[v][1]);
-
-                    pq.push({cost, v});
-                }
             }
         }
 
-        return minCost;
+        sort(edges.begin(), edges.end());
+
+        int cost = 0;
+        int edgesUsed = 0;
+
+        for(auto& edge : edges) {
+
+            int u = edge[1];
+            int v = edge[2];
+            int dist = edge[0];
+
+            if(unionSet(u, v)) {
+                cost += dist;
+                edgesUsed++;
+
+                if(edgesUsed == n - 1) {
+                    break;
+                }
+
+            }
+
+        }
+
+        return cost;
+
     }
 };
