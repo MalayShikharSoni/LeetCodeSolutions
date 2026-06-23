@@ -2,47 +2,50 @@ class Solution {
 public:
     int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
         
-        unordered_map<string, vector<string>> dictionary;
+        unordered_set<string> wordSet(wordList.begin(), wordList.end());
 
-        for(string word: wordList) {
-
-            for(int i = 0; i < word.size(); i++) {
-                string genericWord = word.substr(0, i) + '*' + word.substr(i + 1);
-                dictionary[genericWord].push_back(word);
-            }
-
+        if(wordSet.find(endWord) == wordSet.end()) {
+            return 0;
         }
 
         queue<pair<string, int>> q;
-        unordered_map<string, bool> visited;
-
         q.push({beginWord, 1});
-        visited[beginWord] = true;
+
+        if(wordSet.find(beginWord) != wordSet.end()) {
+            wordSet.erase(beginWord);
+        }
 
         while(!q.empty()) {
 
-            string frontWord = q.front().first;
-            int frontLevel = q.front().second;
+            string top = q.front().first;
+            int steps = q.front().second;
             q.pop();
 
-            for(int i = 0; i < frontWord.size(); i++) {
-                string frontGeneric = frontWord.substr(0, i) + '*' + frontWord.substr(i + 1);
-                
-                for(string w : dictionary[frontGeneric]) {
-                    if(w == endWord) {
-                        return frontLevel + 1;
+            if(top == endWord) {
+                return steps;
+            }
+
+            for(int i = 0; i < top.size(); i++) {
+
+                char original = top[i];
+
+                for(char ch = 'a'; ch <= 'z'; ch++) {
+
+                    top[i] = ch;
+                    if(wordSet.find(top) != wordSet.end()) {
+                        q.push({top, steps + 1});
+                        wordSet.erase(top);
                     }
-                    if(!visited[w]) {
-                        visited[w] = true;
-                        q.push({w, frontLevel + 1});
-                    }
+
                 }
+
+                top[i] = original;
+
             }
 
         }
 
         return 0;
-
 
     }
 };
