@@ -43,7 +43,9 @@ class Trie {
 
             curr = curr->child[index];
             curr->count++; 
-            curr->searches.push_back(word);
+            if(curr->searches.size() < 3) {
+                curr->searches.push_back(word);
+            }
 
         }
         curr->isEnd = true;
@@ -68,18 +70,7 @@ class Trie {
             }
 
             curr = curr->child[index];
-            vector<string> vec;
-            int minn = 3;
-            int size = curr->searches.size();
-            if(size < minn) {
-                minn = size;
-            }
-
-            for(int i = 0; i < minn; i++) {
-                vec.push_back(curr->searches[i]);
-            }
-
-            ans.push_back(vec);
+            ans.push_back(curr->searches);
 
         }
 
