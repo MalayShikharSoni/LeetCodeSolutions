@@ -1,47 +1,75 @@
 class Solution {
 public:
-    int reversePairs(vector<int>& nums) {
-        return countReversePairs(nums, 0, nums.size() - 1);
+    vector<long long> values;
+    vector<int> tree;
+    
+    void update(int node, int start, int end, int index) {
+
+        if(start == end) {
+            tree[node]++;
+            return;
+        }
+
+        int mid = start + (end - start) / 2;
+
+        if(index <= mid) {
+            update(2 * node, start, mid, index);
+        } else {
+            update(2 * node + 1, mid + 1, end, index);
+        }
+
+        tree[node] = tree[2 * node] + tree[2 * node + 1];
+
     }
 
-private:
-    int countReversePairs(vector<int>& nums, int left, int right) {
-        if (left >= right)
+    int query(int node, int start, int end, int left, int right) {
+
+        if(right < start || left > end) {
             return 0;
-
-        int mid = left + (right - left) / 2;
-
-        int count = countReversePairs(nums, left, mid) +
-                    countReversePairs(nums, mid + 1, right);
-
-        int i = left;
-        int j = mid + 1;
-        int p = mid + 1;
-        int k = 0;
-
-        vector<int> merged(right - left + 1);
-
-        while (i <= mid) {
-            while (p <= right && (long long)nums[i] > 2LL * nums[p]) {
-                p++;
-            }
-            count += p - (mid + 1);
-
-            while (j <= right && nums[i] >= nums[j]) {
-                merged[k++] = nums[j++];
-            }
-
-            merged[k++] = nums[i++];
         }
 
-        while (j <= right) {
-            merged[k++] = nums[j++];
+        if(left <= start && end <= right) {
+            return tree[node];
         }
 
-        for (int x = 0; x < merged.size(); ++x) {
-            nums[left + x] = merged[x];
+        int mid = start + (end - start) / 2;
+
+        int leftSum = query(2 * node, start, mid, left, right);
+        int rightSum = query(2 * node + 1, mid + 1, end, left, right);
+
+        return leftSum + rightSum; 
+
+    }
+
+
+    int reversePairs(vector<int>& nums) {
+
+        for(int num : nums) {
+            values.push_back((long long)num);
+            values.push_back(2LL * (long long)num);
         }
 
-        return count;
+        sort(values.begin(), values.end());
+        values.erase(unique(values.begin(), values.end()), values.end());
+
+
+
+        int m = values.size();
+        tree.resize(4 * m, 0);
+
+        int ans = 0;
+
+        for(int i = nums.size() - 1; i >= 0; i--) {
+
+            int rankNum = lower_bound(values.begin(), values.end(), (long long)nums[i]) - values.begin() + 1;
+            ans += query(1, 1, m, 1, rankNum - 1);
+
+            int rankDouble = lower_bound(values.begin(), values.end(), 2LL * (long long)nums[i]) - values.begin() + 1;
+            update(1, 1, m, rankDouble);
+
+        }
+
+        return ans;
+
     }
 };
