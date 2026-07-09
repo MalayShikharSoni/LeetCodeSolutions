@@ -86,9 +86,9 @@ public:
 
         int m = arr.size();
         tree.resize(4 * m, 0);
-        vector<int> freq(m, 0);
+        // vector<int> freq(m, 0);
         
-        build(1, 0, m - 1, freq);
+        // build(1, 0, m - 1, freq);
 
         for(int i = nums.size() - 1; i >= 0; i--) {
 
