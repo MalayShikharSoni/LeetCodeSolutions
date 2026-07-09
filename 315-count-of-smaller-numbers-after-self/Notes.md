@@ -1,1 +1,1 @@
-<h2>count-of-smaller-numbers-after-self Notes</h2><hr>[ Time taken: 8hrs 4m 33s ]
+<h2>count-of-smaller-numbers-after-self Notes</h2><hr>[ Time taken: 6hrs 42m 21s ]
