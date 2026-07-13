@@ -2,35 +2,29 @@ class Solution {
 public:
     int rob(vector<int>& nums) {
         
-        if(nums.size() == 1) {
+        int n = nums.size();
+
+        if(n <= 1) {
             return nums[0];
         }
 
-        int rob1 = 0;
-        int rob2 = 0;
-        int max1 = 0;
-        int max2 = 0;
+        vector<int> dp1(n, 0);
+        vector<int> dp2(n, 0);
 
-        for(int i = 0; i < nums.size() - 1; i++) {
+        dp1[0] = nums[0];
+        dp1[1] = max(nums[0], nums[1]);
 
-            max1 = max(rob2, rob1 + nums[i]);
-            rob1 = rob2;
-            rob2 = max1;
-
+        for(int i = 2; i < n - 1; i++) {
+            dp1[i] = max(nums[i] + dp1[i - 2], dp1[i - 1]);
         }
 
-        rob1 = 0;
-        rob2 = 0;
+        dp2[1] = nums[1];
 
-        for(int i = 1; i < nums.size(); i++) {
-            
-            max2 = max(rob2, rob1 + nums[i]);
-            rob1 = rob2;
-            rob2 = max2;
-
+        for(int i = 2; i < n; i++) {
+            dp2[i] = max(nums[i] + dp2[i - 2], dp2[i - 1]);
         }
 
-        return max(max1, max2);
+        return max(dp1[n - 2], dp2[n - 1]);
 
     }
 };
