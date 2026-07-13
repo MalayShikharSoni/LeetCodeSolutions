@@ -1,1 +1,1 @@
-<h2>n-th-tribonacci-number Notes</h2><hr>[ Time taken: 6m 25s ]
+<h2>n-th-tribonacci-number Notes</h2><hr>[ Time taken: 11hrs 31m 27s ]
