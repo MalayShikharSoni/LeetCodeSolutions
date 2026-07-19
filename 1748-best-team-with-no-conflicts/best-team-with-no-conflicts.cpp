@@ -1,21 +1,5 @@
 class Solution {
 public:
-    int rec(int i, vector<vector<int>>& v, vector<int>& dp) {
-
-        if (dp[i] != -1)
-            return dp[i];
-
-        int ans = v[i][1];  
-
-        for (int j = 0; j < i; j++) {
-            if (v[j][1] <= v[i][1]) {
-                ans = max(ans, rec(j, v, dp) + v[i][1]);
-            }
-        }
-
-        return dp[i] = ans;
-    }
-
     int bestTeamScore(vector<int>& scores, vector<int>& ages) {
 
         int n = scores.size();
@@ -26,12 +10,23 @@ public:
 
         sort(v.begin(), v.end());
 
-        vector<int> dp(n, -1);
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
 
-        int ans = 0;
-        for (int i = 0; i < n; i++)
-            ans = max(ans, rec(i, v, dp));
+        for (int i = n - 1; i >= 0; i--) {
 
-        return ans;
+            for (int prev = i - 1; prev >= -1; prev--) {
+
+                int take = 0;
+
+                if (prev == -1 || v[prev][1] <= v[i][1])
+                    take = v[i][1] + dp[i + 1][i + 1];
+
+                int notTake = dp[i + 1][prev + 1];
+
+                dp[i][prev + 1] = max(take, notTake);
+            }
+        }
+
+        return dp[0][0];
     }
 };
