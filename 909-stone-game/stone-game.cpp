@@ -10,20 +10,18 @@ public:
         }
 
         for(int len = 2; len <= n; len++) {
-            
             for(int i = 0; i <= n - len; i++) {
 
-                int j = i + len - 1;   
+                int j = i + len - 1;
+
                 int takeLeft = piles[i] - dp[i + 1][j];
                 int takeRight = piles[j] - dp[i][j - 1];
 
                 dp[i][j] = max(takeLeft, takeRight);
 
             }
-
         }
 
         return dp[0][n - 1] > 0;
-
     }
 };
