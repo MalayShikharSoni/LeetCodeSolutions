@@ -4,15 +4,14 @@ public:
 
         vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
 
-        for (auto& str : strs) {
+        for (string str : strs) {
 
-            int c0 = count(str.begin(), str.end(), '0');
-            int c1 = str.size() - c0;
+            int count0 = count(str.begin(), str.end(), '0');
+            int count1 = str.size() - count0;
 
-            for (int i = m; i >= c0; --i) {
-                for (int j = n; j >= c1; --j) {
-
-                    dp[i][j] = max(dp[i][j], 1 + dp[i - c0][j - c1]);
+            for (int i = m; i >= count0; i--) {
+                for (int j = n; j >= count1; j--) {
+                    dp[i][j] = max(dp[i][j], 1 + dp[i - count0][j - count1]);
                 }
             }
         }
