@@ -1,1 +1,1 @@
-<h2>ones-and-zeroes Notes</h2><hr>[ Time taken: 21 hrs 40 m 7 s ]
+<h2>ones-and-zeroes Notes</h2><hr>[ Time taken: 37m 21s ]
