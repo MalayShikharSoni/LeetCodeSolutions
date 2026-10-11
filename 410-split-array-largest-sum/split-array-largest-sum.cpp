@@ -3,21 +3,24 @@ public:
 
     bool canSplit(vector<int>& nums, int k, int maxSum) {
 
+        int subArr = 1;
         int currSum = 0;
-        int subarr = 1;
 
         for(int num : nums) {
 
             if(currSum + num > maxSum) {
-                subarr++;
+
+                subArr++;
                 currSum = num;
 
-                if(subarr > k) {
+                if(subArr > k) {
                     return false;
                 }
 
             } else {
+
                 currSum += num;
+            
             }
 
         }
@@ -28,33 +31,27 @@ public:
 
     int splitArray(vector<int>& nums, int k) {
         
-        long long low = nums[0];
-        long long high = 0;
+        int low = nums[0];
+        int high = nums[0];
 
-        for(int num : nums) {
+        for(int i = 1; i < nums.size(); i++) {
 
-            if(num > low) {
-                low = num;
-            }
-            high += num;
-        
+            low = max(low, nums[i]);
+            high += nums[i];
+
         }
 
-        long long ans = high;
+        int ans = high;
 
         while(low <= high) {
 
-            long mid = low + (high - low) / 2;
+            int mid = low + (high - low) / 2;
 
             if(canSplit(nums, k, mid)) {
-
                 ans = mid;
                 high = mid - 1;
-
             } else {
-
                 low = mid + 1;
-
             }
 
         }
